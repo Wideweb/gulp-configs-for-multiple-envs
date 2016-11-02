@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "name": "gulp-configs-for-multiple-envs",
+  "scripts": {
+    "build": "gulp default"
+  },
+  "dependencies": {
+    "angular": "^1.5.8",
+    "lodash": "^4.16.6"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "gulp-file": "^0.3.0",
+    "gulp-inject": "^4.1.0",
+    "gulp-clean": "^0.3.2",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-concat": "^2.6.0",
+    "run-sequence": "^1.2.2"
+  }
+}
