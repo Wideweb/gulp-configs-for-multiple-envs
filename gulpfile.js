@@ -2,12 +2,13 @@ var gulp    = require('gulp'),
     uglify  = require('gulp-uglify'),
     gutil   = require('gulp-util'),
     config  = require('./config');
-    file    = require('gulp-file'),
     inject  = require('gulp-inject');
     clean   = require('gulp-clean');
     cssnano = require('gulp-cssnano');
     concat  = require('gulp-concat');
+    b2v     = require('buffer-to-vinyl');
     runSequence = require('run-sequence');
+    gulpNgConfig = require('gulp-ng-config');
 
 var _ = require('lodash'); 
 
@@ -54,26 +55,14 @@ gulp.task("libs",function() {
 });
 
 gulp.task('constants', function() {
-    var constantsObjString = '{';
-
-    _.map(config.constants, function(value, key) {
-        if (typeof value === 'string') {
-            value = '\'' + value + '\'';
-        }
-        constantsObjString += '\n\t\t ' + key + ': ' + value + ',';
-    });
-    
-    // Remove the last comma
-    constantsObjString = constantsObjString.substring(0, constantsObjString.length - 1);
-    constantsObjString += '\n }';
-
-    var codeString = 
-        '(function(){' +
-        '\n\t angular.module(\'constants\', []).constant(\'constants\', ' + constantsObjString + ');' +
-        '\n})();';
-
-    //calls stream.end() to be used at the beginning of your pipeline in place of gulp.src(). Default: false.
-    return file('constants.js', codeString, { src: true })
+    return b2v
+        .stream(new Buffer(JSON.stringify(config.constants)), 'constants.js')
+        .pipe(gulpNgConfig('app', {
+            constants: config.constants,
+            createModule: false,
+            wrap: true,
+            pretty: true
+        }))
         .pipe(gulp.dest(config.paths.dest.js));
 });
 

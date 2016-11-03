@@ -27,16 +27,20 @@ var paths = {
 
 var constants = {
     default: {
-        apiHost: ''
+        apiHost: '',
+        equipmentApi: ''
     },
     development: {
-        apiHost: 'http://localhost:9050'
+        apiHost: 'http://localhost:9050',
+        equipmentApi: 'http://localhost:9051'
     },
     staging: {
-        apiHost: 'http://staging.example.com/api/'
+        apiHost: 'http://staging.example.com/api/',
+        equipmentApi: 'http://staging.equipmentApi.com/api/'
     },
     production: {
-        apiHost: 'http://example.com/api/'
+        apiHost: 'http://example.com/api/',
+        equipmentApi: 'http://example.equipmentApi.com/api/'
     }
 };
 
