@@ -11,6 +11,7 @@ var gulp    = require('gulp'),
     addsrc  = require('gulp-add-src');
     runSequence  = require('run-sequence');
     gulpNgConfig = require('gulp-ng-config');
+    watch = require('gulp-watch');
 
 var _ = require('lodash'); 
 
@@ -82,11 +83,17 @@ gulp.task("libs",function() {
         config.paths.dest.js + '/**/*.js', 
         config.paths.dest.libs + '/**/*.js', 
         config.paths.dest.css + '/**/*.css',
-    ], {read: false});
+    ], {read: false, cwd: config.paths.dest.cwd });
+
+    console.log(config.paths.dest.cwd);
 
     return target
         .pipe(inject(sources))
         .pipe(gulp.dest(config.paths.dest.html));
  });
 
-gulp.task('default', ['libs', 'templates', 'css', 'js&constants', 'inject-vendor'])
+ gulp.task('watch', ['libs', 'templates', 'css', 'js&constants', 'inject-vendor'], function(){
+     gulp.watch(config.paths.src.html, ['inject-vendor']);
+ });
+
+gulp.task('default', ['libs', 'templates', 'css', 'js&constants', 'inject-vendor', 'watch'])

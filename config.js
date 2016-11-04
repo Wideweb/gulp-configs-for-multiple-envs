@@ -16,6 +16,7 @@ var paths = {
         ]
     }, 
     dest: { 
+        cwd: 'dist/',
         js: 'dist/', 
         constants: 'dist/', 
         html: 'dist/', 
