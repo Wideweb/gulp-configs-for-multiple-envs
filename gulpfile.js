@@ -7,7 +7,9 @@ var gulp    = require('gulp'),
     cssnano = require('gulp-cssnano');
     concat  = require('gulp-concat');
     b2v     = require('buffer-to-vinyl');
-    runSequence = require('run-sequence');
+    gulpif  = require('gulp-if');
+    addsrc  = require('gulp-add-src');
+    runSequence  = require('run-sequence');
     gulpNgConfig = require('gulp-ng-config');
 
 var _ = require('lodash'); 
@@ -20,38 +22,11 @@ gulp.task('clean', function () {
 
 gulp.task('js', ['constants'], function() {
     return gulp
-        .src([config.paths.src.js, config.paths.dest.js + '/constants.js'])
-        .pipe(config.run.js.uglify ? concat('script.js') : gutil.noop())
-        .pipe(config.run.js.uglify ? uglify(config.plugin.js.uglify) : gutil.noop())
+        .src(config.paths.src.js)
+        .pipe(gulpif(config.run.js.uglify, addsrc(config.paths.dest.js + '/constants.js')))
+        .pipe(gulpif(config.run.js.uglify, concat('script.js')))
+        .pipe(gulpif(config.run.js.uglify, uglify(config.plugin.js.uglify)))
         .pipe(gulp.dest(config.paths.dest.js));
-});
-
-gulp.task('js&constants', function(callback) {
-    if(config.run.js.uglify){
-        return runSequence('constants', 'js', 'clean-constants', callback);
-    }
-
-    return runSequence('constants', 'js', callback);
-});
-
-gulp.task('templates', function() {
-    return gulp
-        .src([config.paths.src.templates, '!' + config.paths.src.html])
-        .pipe(gulp.dest(config.paths.dest.templates));
-});
-
-gulp.task('css', function() {
-    return gulp
-        .src(config.paths.src.css)
-        .pipe(config.run.css.cssnano ? concat('styles.css') : gutil.noop())
-        .pipe(config.run.css.cssnano ? cssnano() : gutil.noop())
-        .pipe(gulp.dest(config.paths.dest.css));
-});
-
-gulp.task("libs",function() {
-    return gulp
-        .src(config.paths.src.libs)
-        .pipe(gulp.dest(config.paths.dest.libs));
 });
 
 gulp.task('constants', function() {
@@ -70,6 +45,35 @@ gulp.task('clean-constants', function () {
     return gulp
         .src(config.paths.dest.js + '/constants.js')
         .pipe(clean());
+});
+
+gulp.task('js&constants', function(callback) {
+    //'if constants.js file is attached to the script.js then it will be removed from the destination folder;
+    if(config.run.js.uglify){
+        return runSequence('constants', 'js', 'clean-constants', callback);
+    }
+
+    return runSequence('constants', 'js', callback);
+});
+
+gulp.task('templates', function() {
+    return gulp
+        .src([config.paths.src.templates, '!' + config.paths.src.html])
+        .pipe(gulp.dest(config.paths.dest.templates));
+});
+
+gulp.task('css', function() {
+    return gulp
+        .src(config.paths.src.css)
+        .pipe(gulpif(config.run.css.cssnano, concat('styles.css')))
+        .pipe(gulpif(config.run.css.cssnano, cssnano()))
+        .pipe(gulp.dest(config.paths.dest.css));
+});
+
+gulp.task("libs",function() {
+    return gulp
+        .src(config.paths.src.libs)
+        .pipe(gulp.dest(config.paths.dest.libs));
 });
 
  gulp.task('inject-vendor', ['libs', 'templates', 'css', 'js&constants'], function(){
